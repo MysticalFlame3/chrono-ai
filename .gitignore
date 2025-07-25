@@ -1,0 +1,19 @@
+# Build files
+/target/
+/build/
+out/
+
+# IDE files
+.idea/
+*.iml
+*.iws
+
+# Node modules
+/node_modules/
+
+# Log files
+*.log
+
+# Secrets - good practice
+.env
+application.properties

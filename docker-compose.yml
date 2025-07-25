@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  postgres-db:
+    image: postgres:15-alpine
+    container_name: chronoai-postgres
+    ports:
+      - "5433:5432" # <-- THE CHANGE IS HERE
+    environment:
+      - POSTGRES_USER=chrono_user
+      - POSTGRES_PASSWORD=chrono_password
+      - POSTGRES_DB=chronoai_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: chronoai-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+  postgres-data:
+  rabbitmq-data:
