@@ -34,6 +34,11 @@ public class Task {
     @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    // Add user relationship
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
     // Enum to define the types of notifications we support
     public enum NotificationType {
         EMAIL,
