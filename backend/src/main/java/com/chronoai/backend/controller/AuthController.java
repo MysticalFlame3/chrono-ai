@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -31,6 +34,8 @@ public class AuthController {
     public ResponseEntity<?> loginUser(@RequestBody AuthRequest authRequest) {
         final String jwt = authService.loginUser(authRequest);
         return ResponseEntity.ok(new AuthResponse(jwt));
+
+
     }
 
     // TEMPORARY DEBUG ENDPOINT
