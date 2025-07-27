@@ -62,7 +62,7 @@ public class TaskController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found: " -> + username));
+                .orElseThrow(() -> new RuntimeException("User not found: " + username));
 
         List<Task> userTasks = taskRepository.findByUser(user);
         return ResponseEntity.ok(userTasks);

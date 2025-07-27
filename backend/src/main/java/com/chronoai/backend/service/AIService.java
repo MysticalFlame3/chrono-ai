@@ -61,11 +61,13 @@ public class AIService {
         if (query.contains("every day") || query.contains("daily")) {
             return "0 9 * * *"; // Daily at 9 AM
         } else if (query.contains("every hour") || query.contains("hourly")) {
-            return "0 * * * *"; // Every hour
+            return "0 * * * *"; // Every hour at minute 0
         } else if (query.contains("every minute")) {
             return "* * * * *"; // Every minute
         } else if (query.contains("weekly") || query.contains("every week")) {
             return "0 9 * * 1"; // Every Monday at 9 AM
+        } else if (query.contains("5am") || query.contains("5 am")) {
+            return "0 5 * * *"; // Daily at 5 AM
         } else {
             return "0 9 * * *"; // Default: Daily at 9 AM
         }
