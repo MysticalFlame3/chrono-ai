@@ -1,16 +1,17 @@
 package com.chronoai.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.time.LocalDateTime;
 
-@Data // Lombok annotation to create getters, setters, toString, etc.
-@Entity // Marks this class as a JPA entity (a table in the DB)
-@Table(name = "tasks") // Specifies the table name
+@Data
+@Entity
+@Table(name = "tasks")
 public class Task {
 
-    @Id // Marks this field as the primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increments the ID
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -22,24 +23,24 @@ public class Task {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Enumerated(EnumType.STRING) // Stores the enum as a string (e.g., "EMAIL")
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationType notificationType;
 
     @Column(nullable = false)
-    private String notificationTarget; // This will be an email address or a webhook URL
+    private String notificationTarget;
 
     private boolean enabled = true;
 
     @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    // Add user relationship
+    // This is the new relationship to the User
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore // Prevents infinite loops in JSON responses
     private User user;
 
-    // Enum to define the types of notifications we support
     public enum NotificationType {
         EMAIL,
         WEBHOOK
