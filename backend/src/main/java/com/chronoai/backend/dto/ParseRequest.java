@@ -6,7 +6,6 @@ import lombok.Data;
 public class ParseRequest {
     private String query;
 
-    // Manually added getter for query
     public String getQuery() {
         return query;
     }
