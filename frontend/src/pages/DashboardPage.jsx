@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { logoutUser, getTasks, deleteTask } from '../services/apiService';
 import CreateTaskForm from '../components/CreateTaskForm';
-import TaskHistory from '../components/TaskHistory'; // Import the new component
+import TaskHistory from '../components/TaskHistory'; 
 
 const DashboardPage = ({ setIsLoggedIn }) => {
   const [tasks, setTasks] = useState([]);
-  const [viewingHistoryOf, setViewingHistoryOf] = useState(null); // State to track which history is open
+  const [viewingHistoryOf, setViewingHistoryOf] = useState(null); 
 
   const fetchTasks = async () => {
-    // ... (this function is the same)
+    // ... 
   };
 
   useEffect(() => {
@@ -16,29 +16,29 @@ const DashboardPage = ({ setIsLoggedIn }) => {
   }, []);
 
   const handleLogout = () => {
-    // ... (this function is the same)
+    // ... )
   };
 
   const handleTaskCreated = (newTask) => {
-    // ... (this function is the same)
+    // ... 
   };
 
   const handleDeleteTask = async (taskId) => {
-    // ... (this function is the same)
+    // ... 
   };
 
   const toggleHistory = (taskId) => {
     if (viewingHistoryOf === taskId) {
-      setViewingHistoryOf(null); // Close it if it's already open
+      setViewingHistoryOf(null); 
     } else {
-      setViewingHistoryOf(taskId); // Open the new one
+      setViewingHistoryOf(taskId); 
     }
   };
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
       <header /* ... */ >
-          {/* ... Header is the same ... */}
+          {/* ... Header is  same ... */}
       </header>
 
       <main>
@@ -65,7 +65,7 @@ const DashboardPage = ({ setIsLoggedIn }) => {
                       </button>
                     </div>
                   </div>
-                  {/* Conditionally render the history component */}
+                  {/*  render history component */}
                   {viewingHistoryOf === task.id && <TaskHistory taskId={task.id} />}
                 </div>
               ))
