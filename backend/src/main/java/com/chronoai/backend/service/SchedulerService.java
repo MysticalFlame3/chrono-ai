@@ -52,4 +52,13 @@ public class SchedulerService {
                 .withSchedule(CronScheduleBuilder.cronSchedule(task.getCronExpression()))
                 .build();
     }
+
+    public void deleteJob(Long taskId) {
+        try {
+            scheduler.deleteJob(new JobKey(taskId.toString(), "tasks"));
+            log.info("Job deleted for task ID: {}", taskId);
+        } catch (SchedulerException e) {
+            log.error("Error deleting job for task ID: {}", taskId, e);
+    }
+}
 }
