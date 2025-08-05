@@ -60,9 +60,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            // Log the error but don't block the request
             System.err.println("[JwtRequestFilter] JWT Authentication error: " + e.getMessage());
-            // Clear the security context to ensure no partial authentication
             SecurityContextHolder.clearContext();
         }
 
