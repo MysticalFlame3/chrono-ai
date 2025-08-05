@@ -19,8 +19,7 @@ public class TaskJob implements Job {
         String notificationType = dataMap.getString("notificationType");
         String notificationTarget = dataMap.getString("notificationTarget");
 
-        // This is where the task's work happens.
-        // For now, we'll just log a message.
+        
         log.info("Executing job for task: '{}' -> Type: {}, Target: {}",
                 taskName, notificationType, notificationTarget);
     }
