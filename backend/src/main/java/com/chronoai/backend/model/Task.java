@@ -38,7 +38,7 @@ public class Task {
     // This is the new relationship to the User
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore // Prevents infinite loops in JSON responses
+    @JsonIgnore 
     private User user;
 
     public enum NotificationType {
