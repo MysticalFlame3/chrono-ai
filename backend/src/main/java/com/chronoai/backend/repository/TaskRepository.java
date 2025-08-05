@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
-    // New method to find all tasks for a specific user
     List<Task> findByUser(User user);
 }
