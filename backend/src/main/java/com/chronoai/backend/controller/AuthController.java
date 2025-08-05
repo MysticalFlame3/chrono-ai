@@ -16,12 +16,11 @@ import java.util.List;
 public class AuthController {
 
     private final AuthService authService;
-    private final PasswordEncoder passwordEncoder; // <-- Add this
-
+    private final PasswordEncoder passwordEncoder; 
     @Autowired
-    public AuthController(AuthService authService, PasswordEncoder passwordEncoder) { // <-- Update constructor
+    public AuthController(AuthService authService, PasswordEncoder passwordEncoder) { 
         this.authService = authService;
-        this.passwordEncoder = passwordEncoder; // <-- Add this
+        this.passwordEncoder = passwordEncoder; 
     }
 
     @PostMapping("/register")
@@ -38,7 +37,6 @@ public class AuthController {
 
     }
 
-    // TEMPORARY DEBUG ENDPOINT
     @GetMapping("/hash/{password}")
     public String getPasswordHash(@PathVariable String password) {
         return "Hash for '" + password + "': " + passwordEncoder.encode(password);
