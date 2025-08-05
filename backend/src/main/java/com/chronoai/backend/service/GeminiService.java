@@ -38,11 +38,7 @@ public class GeminiService {
         }
     }
 
-    /**
-     * Send a message to Gemini and get a response
-     * @param message The user's message
-     * @return The AI's response
-     */
+  
     public String sendMessage(String message) {
         try {
             ResponseHandler response = chat.sendMessage(message);
@@ -53,13 +49,7 @@ public class GeminiService {
         }
     }
 
-    /**
-     * Generate content with specific parameters
-     * @param prompt The prompt for content generation
-     * @param temperature Controls randomness (0.0 to 1.0)
-     * @param maxTokens Maximum number of tokens to generate
-     * @return Generated content
-     */
+    
     public String generateContent(String prompt, double temperature, int maxTokens) {
         try {
             return model.generateContent()
@@ -74,12 +64,7 @@ public class GeminiService {
         }
     }
 
-    /**
-     * Process a task with context
-     * @param taskDescription The task to be processed
-     * @param context Additional context or requirements
-     * @return Processed result
-     */
+   
     public String processTask(String taskDescription, String context) {
         try {
             StringBuilder prompt = new StringBuilder();
@@ -94,11 +79,7 @@ public class GeminiService {
         }
     }
 
-    /**
-     * Get a stream of responses for real-time interaction
-     * @param prompt The input prompt
-     * @return List of response chunks
-     */
+    
     public List<String> streamResponse(String prompt) {
         List<String> responses = new ArrayList<>();
         try {
@@ -111,9 +92,7 @@ public class GeminiService {
         }
     }
 
-    /**
-     * Reset the chat session
-     */
+   
     public void resetChat() {
         chat = model.startChat();
     }
