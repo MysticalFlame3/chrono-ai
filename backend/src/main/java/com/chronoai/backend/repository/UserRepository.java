@@ -9,7 +9,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    // We need a custom method to find a user by their username.
-    // This will be used during the login process.
+    
     Optional<User> findByUsername(String username);
 }
