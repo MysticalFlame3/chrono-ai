@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { logoutUser, getTasks, deleteTask } from '../services/apiService';
+import { logoutUser, getTasks, deleteTask, createTask } from '../services/apiService';
 import CreateTaskForm from '../components/CreateTaskForm';
-import TaskHistory from '../components/TaskHistory'; 
+import TaskHistory from '../components/TaskHistory';
 
 const DashboardPage = ({ setIsLoggedIn }) => {
   const [tasks, setTasks] = useState([]);
-  const [viewingHistoryOf, setViewingHistoryOf] = useState(null); 
+  const [viewingHistoryOf, setViewingHistoryOf] = useState(null);
 
   const fetchTasks = async () => {
-    // ... 
+    try {
+      const response = await getTasks();
+      setTasks(response.data);
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error);
+      if (error.response && (error.response.status === 401 || error.response.status === 403)) {
+        handleLogout();
+      }
+    }
   };
 
   useEffect(() => {
@@ -16,29 +24,45 @@ const DashboardPage = ({ setIsLoggedIn }) => {
   }, []);
 
   const handleLogout = () => {
-    // ... )
+    logoutUser();
+    setIsLoggedIn(false);
   };
 
   const handleTaskCreated = (newTask) => {
-    // ... 
+    setTasks((prevTasks) => [...prevTasks, newTask]);
   };
 
   const handleDeleteTask = async (taskId) => {
-    // ... 
+    if (window.confirm('Are you sure you want to delete this task?')) {
+      try {
+        await deleteTask(taskId);
+        setTasks(tasks.filter((task) => task.id !== taskId));
+        alert('Task deleted successfully!');
+      } catch (error) {
+        console.error('Failed to delete task:', error);
+        alert('Failed to delete task.');
+      }
+    }
   };
 
   const toggleHistory = (taskId) => {
     if (viewingHistoryOf === taskId) {
-      setViewingHistoryOf(null); 
+      setViewingHistoryOf(null);
     } else {
-      setViewingHistoryOf(taskId); 
+      setViewingHistoryOf(taskId);
     }
   };
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4">
-      <header /* ... */ >
-          {/* ... Header is  same ... */}
+      <header className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-white">ChronoAI Dashboard</h1>
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition duration-300"
+        >
+          Logout
+        </button>
       </header>
 
       <main>
@@ -65,7 +89,6 @@ const DashboardPage = ({ setIsLoggedIn }) => {
                       </button>
                     </div>
                   </div>
-                  {/*  render history component */}
                   {viewingHistoryOf === task.id && <TaskHistory taskId={task.id} />}
                 </div>
               ))
