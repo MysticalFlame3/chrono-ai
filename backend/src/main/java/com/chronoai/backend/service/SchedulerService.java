@@ -45,11 +45,12 @@ public class SchedulerService {
     }
 
     private Trigger buildTrigger(Task task, JobDetail jobDetail) {
+        String cron = normalizeToQuartzCron(task.getCronExpression());
         return TriggerBuilder.newTrigger()
                 .forJob(jobDetail)
                 .withIdentity(jobDetail.getKey().getName(), "task-triggers")
                 .withDescription("Trigger for " + task.getName())
-                .withSchedule(CronScheduleBuilder.cronSchedule(task.getCronExpression()))
+                .withSchedule(CronScheduleBuilder.cronSchedule(cron))
                 .build();
     }
 
@@ -61,4 +62,19 @@ public class SchedulerService {
             log.error("Error deleting job for task ID: {}", taskId, e);
     }
 }
+
+    private String normalizeToQuartzCron(String cronExpression) {
+        String trimmed = cronExpression == null ? "" : cronExpression.trim();
+        String[] parts = trimmed.split("\\s+");
+        if (parts.length == 5) {
+            String minute = parts[0];
+            String hour = parts[1];
+            String dayOfMonth = parts[2];
+            String month = parts[3];
+            // Quartz requires day-of-week or day-of-month to be ?, prefer dow=? to mimic standard cron
+            return String.format("0 %s %s %s %s ?", minute, hour, dayOfMonth, month);
+        }
+        // If already 6 or 7 fields, assume Quartz compatible
+        return trimmed;
+    }
 }
