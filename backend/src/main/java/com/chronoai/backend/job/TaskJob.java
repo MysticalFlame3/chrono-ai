@@ -31,32 +31,32 @@ public class TaskJob implements Job {
     public void execute(JobExecutionContext context) {
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
         Long taskId = Long.parseLong(context.getJobDetail().getKey().getName());
+        String taskName = dataMap.getString("taskName"); // Get taskName early
 
         ExecutionLog executionLog = new ExecutionLog();
         Task task = taskRepository.findById(taskId).orElse(null);
-        
+
         if (task == null) {
             log.error("Task with ID {} not found for job execution.", taskId);
             return;
         }
-        
+
         executionLog.setTask(task);
         executionLog.setExecutionTime(LocalDateTime.now());
 
         try {
-            String taskName = dataMap.getString("taskName");
             Task.NotificationType notificationType = Task.NotificationType.valueOf(dataMap.getString("notificationType"));
             String notificationTarget = dataMap.getString("notificationTarget");
 
             log.info("Executing job for task: '{}'", taskName);
             String message = "Task '" + taskName + "' has been executed.";
             notificationService.sendNotification(notificationType, notificationTarget, message);
-            
+
             executionLog.setStatus(ExecutionLog.LogStatus.SUCCESS);
             executionLog.setDetails("Notification sent successfully.");
 
         } catch (Exception e) {
-            log.error("Job execution failed for task: {}", task.getName(), e);
+            log.error("Job execution failed for task: {}", taskName, e); // Use taskName here
             executionLog.setStatus(ExecutionLog.LogStatus.FAILURE);
             executionLog.setDetails("Error: " + e.getMessage());
         } finally {
