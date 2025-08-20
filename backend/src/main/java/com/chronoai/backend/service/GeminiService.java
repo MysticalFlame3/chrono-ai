@@ -1,99 +1,96 @@
 package com.chronoai.backend.service;
 
-import com.chronoai.backend.config.GeminiConfig;
-import com.google.cloud.vertexai.VertexAI;
-import com.google.cloud.vertexai.generativeai.GenerativeModel;
-import com.google.cloud.vertexai.generativeai.ChatSession;
-import com.google.cloud.vertexai.generativeai.ResponseHandler;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
 @Service
 public class GeminiService {
+
     private static final Logger logger = LoggerFactory.getLogger(GeminiService.class);
-    private final GeminiConfig geminiConfig;
-    private GenerativeModel model;
-    private ChatSession chat;
 
-    @Autowired
-    public GeminiService(GeminiConfig geminiConfig) {
-        this.geminiConfig = geminiConfig;
-        initializeGemini();
-    }
+    @Value("${gemini.api.key}")
+    private String apiKey;
 
-    private void initializeGemini() {
-        try {
-            VertexAI vertexAI = new VertexAI(geminiConfig.getKey());
-            model = new GenerativeModel("gemini-pro", vertexAI);
-            chat = model.startChat();
-        } catch (Exception e) {
-            logger.error("Failed to initialize Gemini API", e);
-            throw new RuntimeException("Failed to initialize Gemini API", e);
-        }
-    }
+    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
 
-  
-    public String sendMessage(String message) {
-        try {
-            ResponseHandler response = chat.sendMessage(message);
-            return response.getText();
-        } catch (IOException e) {
-            logger.error("Failed to send message to Gemini API", e);
-            throw new RuntimeException("Failed to communicate with Gemini API", e);
-        }
-    }
-
-    
+    /**
+     * A general method to generate content with specific parameters.
+     * @param prompt The text prompt to send to the model.
+     * @param temperature Controls randomness (0.0 for deterministic, 1.0 for creative).
+     * @param maxTokens The maximum number of tokens in the response.
+     * @return The text response from the AI.
+     */
     public String generateContent(String prompt, double temperature, int maxTokens) {
         try {
-            return model.generateContent()
-                    .setTemperature(temperature)
-                    .setMaxTokens(maxTokens)
-                    .setPrompt(prompt)
-                    .execute()
-                    .getText();
-        } catch (IOException e) {
+            // Build the complex JSON body required by the Gemini API
+            String requestBody = String.format(
+                    "{\"contents\":[{\"parts\":[{\"text\":\"%s\"}]}], \"generationConfig\": {\"temperature\": %f, \"maxOutputTokens\": %d}}",
+                    prompt.replace("\"", "\\\""), // Escape quotes in the prompt
+                    temperature,
+                    maxTokens
+            );
+
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(GEMINI_API_URL + apiKey))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            if (response.statusCode() != 200) {
+                logger.error("Gemini API request failed with status code {}: {}", response.statusCode(), response.body());
+                throw new RuntimeException("Failed to communicate with Gemini API: " + response.body());
+            }
+
+            return extractTextFromResponse(response.body());
+
+        } catch (IOException | InterruptedException e) {
             logger.error("Failed to generate content with Gemini API", e);
             throw new RuntimeException("Failed to generate content", e);
         }
     }
 
-   
-    public String processTask(String taskDescription, String context) {
-        try {
-            StringBuilder prompt = new StringBuilder();
-            prompt.append("Task: ").append(taskDescription).append("\n");
-            prompt.append("Context: ").append(context).append("\n");
-            prompt.append("Please process this task considering the given context.");
+    /**
+     * A simpler method for chat-like interactions with default parameters.
+     * @param message The user's message.
+     * @return The AI's response.
+     */
+    public String sendMessage(String message) {
+        // Uses the general method with default settings
+        return generateContent(message, 0.7, 1000);
+    }
 
-            return generateContent(prompt.toString(), 0.7, 1000);
+    /**
+     * A helper method to parse the text from the complex JSON response.
+     * @param responseBody The full JSON response from the API.
+     * @return The extracted text content.
+     */
+    private String extractTextFromResponse(String responseBody) {
+        try {
+            int textIndex = responseBody.indexOf("\"text\": \"");
+            if (textIndex == -1) {
+                // Handle potential errors or different response structures
+                if (responseBody.contains("error")) {
+                    logger.error("Gemini API returned an error: {}", responseBody);
+                    return "Error: " + responseBody;
+                }
+                throw new RuntimeException("Could not find 'text' in Gemini response: " + responseBody);
+            }
+            String sub = responseBody.substring(textIndex + 9);
+            int endIndex = sub.indexOf("\"");
+            return sub.substring(0, endIndex).replace("\\n", " ").trim();
         } catch (Exception e) {
-            logger.error("Failed to process task with Gemini API", e);
-            throw new RuntimeException("Failed to process task", e);
+            throw new RuntimeException("Failed to parse Gemini response: " + responseBody, e);
         }
-    }
-
-    
-    public List<String> streamResponse(String prompt) {
-        List<String> responses = new ArrayList<>();
-        try {
-            model.generateContentStream(prompt)
-                .forEach(response -> responses.add(response.getText()));
-            return responses;
-        } catch (IOException e) {
-            logger.error("Failed to stream response from Gemini API", e);
-            throw new RuntimeException("Failed to stream response", e);
-        }
-    }
-
-   
-    public void resetChat() {
-        chat = model.startChat();
     }
 }
