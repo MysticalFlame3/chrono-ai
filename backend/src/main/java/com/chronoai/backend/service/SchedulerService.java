@@ -71,10 +71,8 @@ public class SchedulerService {
             String hour = parts[1];
             String dayOfMonth = parts[2];
             String month = parts[3];
-            // Quartz requires day-of-week or day-of-month to be ?, prefer dow=? to mimic standard cron
             return String.format("0 %s %s %s %s ?", minute, hour, dayOfMonth, month);
         }
-        // If already 6 or 7 fields, assume Quartz compatible
         return trimmed;
     }
 }
