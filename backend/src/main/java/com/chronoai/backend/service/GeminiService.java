@@ -21,13 +21,7 @@ public class GeminiService {
 
     private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=";
 
-    /**
-     * A general method to generate content with specific parameters.
-     * @param prompt The text prompt to send to the model.
-     * @param temperature Controls randomness (0.0 for deterministic, 1.0 for creative).
-     * @param maxTokens The maximum number of tokens in the response.
-     * @return The text response from the AI.
-     */
+    
     public String generateContent(String prompt, double temperature, int maxTokens) {
         try {
             // Build the complex JSON body required by the Gemini API
@@ -60,21 +54,13 @@ public class GeminiService {
         }
     }
 
-    /**
-     * A simpler method for chat-like interactions with default parameters.
-     * @param message The user's message.
-     * @return The AI's response.
-     */
+    
     public String sendMessage(String message) {
         // Uses the general method with default settings
         return generateContent(message, 0.7, 1000);
     }
 
-    /**
-     * A helper method to parse the text from the complex JSON response.
-     * @param responseBody The full JSON response from the API.
-     * @return The extracted text content.
-     */
+    
     private String extractTextFromResponse(String responseBody) {
         try {
             int textIndex = responseBody.indexOf("\"text\": \"");
