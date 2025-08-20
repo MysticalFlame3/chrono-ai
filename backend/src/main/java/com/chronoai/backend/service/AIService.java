@@ -42,10 +42,8 @@ public class AIService {
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                 .build();
 
-        // Send the request and get the response
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        // Extract the text from the JSON response
         String cronExpression = extractTextFromResponse(response.body());
 
         if (cronExpression.matches("^[\\*\\/\\d\\s,-]+$") && cronExpression.split(" ").length >= 5) {
@@ -55,7 +53,6 @@ public class AIService {
         }
     }
 
-    // Simple fallback for testing when API key is not configured
     private String getDefaultCronExpression(String query) {
         query = query.toLowerCase();
         if (query.contains("every day") || query.contains("daily")) {
@@ -71,7 +68,6 @@ public class AIService {
         }
     }
 
-    // A simple helper method to parse the JSON response without extra libraries
     private String extractTextFromResponse(String responseBody) {
         try {
             int textIndex = responseBody.indexOf("\"text\": \"");
