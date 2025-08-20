@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,30 +26,12 @@ public class GeminiController {
     @PostMapping("/generate")
     public ResponseEntity<String> generate(@RequestBody Map<String, Object> request) {
         String prompt = (String) request.get("prompt");
-        double temperature = request.containsKey("temperature") ? 
-            ((Number) request.get("temperature")).doubleValue() : 0.7;
-        int maxTokens = request.containsKey("maxTokens") ? 
-            ((Number) request.get("maxTokens")).intValue() : 1000;
-        
+        // Use default values if the keys are not present
+        double temperature = request.containsKey("temperature") ?
+                ((Number) request.get("temperature")).doubleValue() : 0.7;
+        int maxTokens = request.containsKey("maxTokens") ?
+                ((Number) request.get("maxTokens")).intValue() : 1000;
+
         return ResponseEntity.ok(geminiService.generateContent(prompt, temperature, maxTokens));
-    }
-
-    @PostMapping("/process-task")
-    public ResponseEntity<String> processTask(@RequestBody Map<String, String> request) {
-        String taskDescription = request.get("task");
-        String context = request.get("context");
-        return ResponseEntity.ok(geminiService.processTask(taskDescription, context));
-    }
-
-    @PostMapping("/stream")
-    public ResponseEntity<List<String>> streamResponse(@RequestBody Map<String, String> request) {
-        String prompt = request.get("prompt");
-        return ResponseEntity.ok(geminiService.streamResponse(prompt));
-    }
-
-    @PostMapping("/reset")
-    public ResponseEntity<Void> resetChat() {
-        geminiService.resetChat();
-        return ResponseEntity.ok().build();
     }
 }
