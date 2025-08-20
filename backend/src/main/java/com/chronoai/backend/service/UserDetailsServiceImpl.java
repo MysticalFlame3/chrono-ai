@@ -26,7 +26,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        // THE CHANGE IS HERE: We now grant the user a default role.
         return new org.springframework.security.core.userdetails.User(
                 user.getUsername(),
                 user.getPassword(),
