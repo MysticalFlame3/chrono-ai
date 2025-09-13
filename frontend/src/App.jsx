@@ -1,38 +1,52 @@
-import { useState, useEffect } from 'react';
-import RegistrationForm from './components/RegistrationForm';
-import LoginForm from './components/LoginForm';
+import React, { useState } from 'react';
+import { Toaster } from 'react-hot-toast';
 import DashboardPage from './pages/DashboardPage';
+import AuthPage from './pages/AuthPage';
 
 function App() {
-  // Check if a token exists in local storage to keep the user logged in
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
-  const [isLoginView, setIsLoginView] = useState(true);
-
-  if (isLoggedIn) {
-    return (
-      <div className="bg-gray-900 text-white min-h-screen p-4">
-        <DashboardPage setIsLoggedIn={setIsLoggedIn} />
-      </div>
-    );
-  }
 
   return (
-    <div className="bg-gray-900 text-white min-h-screen flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {isLoginView ? (
-          <LoginForm setIsLoggedIn={setIsLoggedIn} />
-        ) : (
-          <RegistrationForm />
-        )}
-        <button
-          onClick={() => setIsLoginView(!isLoginView)}
-          className="mt-4 text-sm text-blue-400 hover:underline"
-        >
-          {isLoginView
-            ? 'Need an account? Register'
-            : 'Already have an account? Login'}
-        </button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-700 font-sans">
+      {isLoggedIn ? (
+        <DashboardPage setIsLoggedIn={setIsLoggedIn} />
+      ) : (
+        <AuthPage setIsLoggedIn={setIsLoggedIn} />
+      )}
+
+      {/* Toast provider for beautiful notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: '#1f2937', // bg-neutral-800
+            color: '#f9fafb', // text-neutral-50
+            borderRadius: '12px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          },
+          duration: 3000,
+          success: {
+            duration: 2000,
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#ffffff',
+            },
+          },
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#ffffff',
+            },
+          },
+        }}
+        gutter={16}
+        containerStyle={{
+          top: 20,
+          right: 20,
+        }}
+      />
     </div>
   );
 }
