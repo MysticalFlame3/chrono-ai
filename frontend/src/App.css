@@ -1,118 +1,54 @@
-/* Responsive Design Utilities */
-.container {
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 1rem;
+import React, { useState } from 'react';
+import { Toaster } from 'react-hot-toast';
+import DashboardPage from './pages/DashboardPage';
+import AuthPage from './pages/AuthPage';
+
+function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-neutral-900 via-neutral-800 to-neutral-700 font-sans">
+      {isLoggedIn ? (
+        <DashboardPage setIsLoggedIn={setIsLoggedIn} />
+      ) : (
+        <AuthPage setIsLoggedIn={setIsLoggedIn} />
+      )}
+
+      {/* Toast provider for beautiful notifications */}
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: '#1f2937', // bg-neutral-800
+            color: '#f9fafb', // text-neutral-50
+            borderRadius: '12px',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+          },
+          duration: 3000,
+          success: {
+            duration: 2000,
+            iconTheme: {
+              primary: '#10b981',
+              secondary: '#ffffff',
+            },
+          },
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#ffffff',
+            },
+          },
+        }}
+        gutter={16}
+        containerStyle={{
+          top: 20,
+          right: 20,
+        }}
+      />
+    </div>
+  );
 }
 
-@media (min-width: 640px) {
-  .container {
-    padding: 1.5rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  .container {
-    padding: 2rem;
-  }
-}
-
-/* Smooth animations */
-.fade-in {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-.slide-up {
-  animation: slideUp 0.3s ease-out;
-}
-
-.scale-in {
-  animation: scaleIn 0.2s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from { 
-    transform: translateY(10px);
-    opacity: 0;
-  }
-  to { 
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes scaleIn {
-  from { 
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to { 
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* Responsive text utilities */
-.text-responsive-xs {
-  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-}
-
-.text-responsive-sm {
-  font-size: clamp(0.875rem, 2vw, 1rem);
-}
-
-.text-responsive-base {
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
-}
-
-.text-responsive-lg {
-  font-size: clamp(1.125rem, 3vw, 1.5rem);
-}
-
-.text-responsive-xl {
-  font-size: clamp(1.5rem, 4vw, 2rem);
-}
-
-.text-responsive-2xl {
-  font-size: clamp(2rem, 5vw, 3rem);
-}
-
-/* Mobile-first spacing */
-.space-responsive {
-  @apply space-y-4 sm:space-y-6 lg:space-y-8;
-}
-
-.p-responsive {
-  @apply p-4 sm:p-6 lg:p-8;
-}
-
-.px-responsive {
-  @apply px-4 sm:px-6 lg:px-8;
-}
-
-.py-responsive {
-  @apply py-4 sm:py-6 lg:py-8;
-}
-
-/* Grid responsive utilities */
-.grid-responsive-1 {
-  @apply grid grid-cols-1 gap-4;
-}
-
-.grid-responsive-2 {
-  @apply grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6;
-}
-
-.grid-responsive-3 {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6;
-}
-
-.grid-responsive-4 {
-  @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6;
-}
+export default App;
